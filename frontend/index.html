@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Student Scheduler & AI Rest Advisor</title>
+    <link rel="stylesheet" href="./assets/colourful_style.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <h1>Smart Student Scheduler</h1>
+        <p>Cân bằng lịch học, deadline và thời gian hồi sức cùng AI</p>
+      </div>
+      <div class="clock-wrap">
+        <div class="clock">
+          <time id="live-time">00:00:00</time>
+          <span id="live-date">--/--/----</span>
+        </div>
+        <button
+          id="btn-sound-test"
+          class="btn btn-ghost"
+          title="Thử chuông báo thức"
+        >
+          <i data-icon="bell-ring"></i> Thử chuông
+        </button>
+      </div>
+    </header>
+
+    <section class="panel day" aria-label="Lịch hôm nay">
+      <div class="panel-head">
+        <h2>Một ngày của bạn</h2>
+        <div class="legend">
+          <span class="dot study"></span>Học <span class="dot rest"></span>Nghỉ
+        </div>
+      </div>
+      <div id="timeline" class="timeline"></div>
+    </section>
+
+    <main class="layout">
+      <aside class="stack">
+        <form id="form-schedule" class="panel form">
+          <h2>Thêm môn học hoặc giờ nghỉ</h2>
+          <label
+            >Tên môn học hoặc hoạt động
+            <input
+              type="text"
+              id="sch-title"
+              placeholder="VD: Lập trình Web, Nghỉ trưa"
+              required
+            />
+          </label>
+          <div class="row">
+            <label
+              >Loại
+              <select id="sch-type">
+                <option value="study">Ca học</option>
+                <option value="rest">Giờ nghỉ</option>
+              </select>
+            </label>
+            <label
+              >Phòng / địa điểm
+              <input type="text" id="sch-room" placeholder="VD: A201" />
+            </label>
+          </div>
+          <div class="row">
+            <label>Bắt đầu <input type="time" id="sch-start" required /></label>
+            <label>Kết thúc <input type="time" id="sch-end" required /></label>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i data-icon="plus"></i> Thêm vào thời khóa biểu
+          </button>
+        </form>
+
+        <form id="form-task" class="panel form">
+          <h2>Thêm task và đặt báo thức</h2>
+          <label
+            >Tên bài tập / deadline
+            <input
+              type="text"
+              id="task-name"
+              placeholder="VD: Báo cáo đồ án PHP"
+              required
+            />
+          </label>
+          <label
+            >Độ ưu tiên (mức 1 là quan trọng nhất)
+            <select id="task-priority">
+              <option value="1">Mức 1: Đột xuất, cực kỳ quan trọng</option>
+              <option value="2">Mức 2: Quan trọng</option>
+              <option value="3" selected>Mức 3: Trung bình</option>
+              <option value="4">Mức 4: Nhẹ nhàng</option>
+            </select>
+          </label>
+          <label
+            >Hạn nộp <input type="datetime-local" id="task-deadline" required
+          /></label>
+          <label
+            >Giờ báo thức nhắc nhở <input type="datetime-local" id="task-alarm"
+          /></label>
+          <button type="submit" class="btn btn-accent">
+            <i data-icon="bell"></i> Lưu task và hẹn báo thức
+          </button>
+        </form>
+      </aside>
+
+      <section class="stack">
+        <div class="panel ai">
+          <div class="panel-head">
+            <div>
+              <h2>Trợ lý nghỉ ngơi</h2>
+              <p class="hint">
+                Phân tích lịch học và task để gợi ý nhịp nghỉ hợp lý.
+              </p>
+            </div>
+            <button id="btn-ai-generate" class="btn btn-light">
+              <i data-icon="sparkles"></i> Gợi ý lịch nghỉ
+            </button>
+          </div>
+          <div id="ai-suggestion-box" class="ai-box">
+            <p class="muted">
+              Bấm "Gợi ý lịch nghỉ" để AI lập kế hoạch cân bằng cho bạn.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Task và deadline</h2>
+              <p class="hint">
+                Sắp theo mức ưu tiên, rồi đến hạn nộp gần nhất.
+              </p>
+            </div>
+            <span id="task-count" class="count">0 task</span>
+          </div>
+          <div id="task-container" class="list scroll"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Thời khóa biểu trong ngày</h2>
+              <p class="hint">Lịch học cố định và các khoảng nghỉ.</p>
+            </div>
+            <span id="schedule-count" class="count">0 mục</span>
+          </div>
+          <div id="schedule-container" class="list scroll"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      © 2026 Smart Student Scheduler — quản lý thời gian và phục hồi sức khỏe
+      cho sinh viên.
+    </footer>
+
+    <div id="alarm-modal" class="modal" hidden>
+      <div class="modal-box" role="alertdialog" aria-labelledby="alarm-title">
+        <div class="modal-icon" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"
+            />
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
+          </svg>
+        </div>
+        <h3 id="alarm-title">Đến giờ báo thức</h3>
+        <p id="alarm-desc"></p>
+        <button id="btn-stop-alarm" class="btn btn-danger">Tắt báo thức</button>
+      </div>
+    </div>
+
+    <script src="../backend/src/script/activities.js"></script>
+  </body>
+</html>
