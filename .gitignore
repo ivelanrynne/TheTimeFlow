@@ -1,23 +1,43 @@
-# Dependency directories
+# ==========================================
+# 1. Dependency Directories
+# ==========================================
 node_modules/
 **/node_modules/
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
 
-# Environment variables
+# ==========================================
+# 2. Environment Variables & Credentials
+# ==========================================
 .env
-.env*.local
-.env.production
-.env.development
+.env.*
 !.env.example
+*.pem
+*.key
+*.cert
+*.pfx
+config.local.json
+secrets.json
 
-# Build and production output
+# ==========================================
+# 3. Build & Production Outputs
+# ==========================================
 dist/
 dist-ssr/
 build/
 out/
+bin/
+obj/
 *.tgz
 *.tar.gz
+*.zip
+*.rar
+*.7z
 
-# Logs
+# ==========================================
+# 4. Logs & Debugging
+# ==========================================
 logs/
 *.log
 npm-debug.log*
@@ -26,7 +46,70 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# OS & System files
+# ==========================================
+# 5. API Testing Tools (Postman, Insomnia, Bruno)
+# ==========================================
+postman/
+.postman/
+*.postman_collection.json
+*.postman_environment.json
+.insomnia/
+bruno/
+
+# ==========================================
+# 6. IDEs & Text Editors
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sw?
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ==========================================
+# 7. Web Frameworks & Caches
+# ==========================================
+.cache/
+.eslintcache
+.stylelintcache
+.vite/
+.next/
+.nuxt/
+.vuepress/
+.parcel-cache/
+.turbo/
+.svelte-kit/
+
+# ==========================================
+# 8. Databases & Storage
+# ==========================================
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# ==========================================
+# 9. Test Coverage & Reports
+# ==========================================
+coverage/
+.nyc_output/
+cypress/screenshots/
+cypress/videos/
+playwright-report/
+blob-report/
+test-results/
+
+# ==========================================
+# 10. Operating System & System Files
+# ==========================================
 .DS_Store
 .DS_Store?
 ._*
@@ -34,24 +117,13 @@ lerna-debug.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# IDE & Text Editor files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# ==========================================
+# 11. Temporary & Backup Files
+# ==========================================
+tmp/
+temp/
+*.tmp
+*.bak
 *.swp
-*.swo
-
-# Temporary & Cache files
-.cache/
-.eslintcache
-.vite/
-.next/
-.postman/

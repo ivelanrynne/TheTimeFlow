@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Session from "../models/Session.js";
 
-const ACCESS_TOKEN_TTL = '30m'; // 30 minutes
+const ACCESS_TOKEN_TTL = '15s'; // 30 minutes
 
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 
@@ -100,7 +100,17 @@ export const signIn = async (req, res) => {
         // give accesss token to response
         return res
             .status(200)
-            .json({ message: `${user.displayName} logged in successfully.`, accessToken });
+            .json({
+                message: `${user.displayName} logged in successfully.`,
+                accessToken,
+                user: {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    displayName: user.displayName,
+                    avatarUrl: user.avatarUrl,
+                }
+            });
         
     } catch (error) {
         return res
@@ -111,14 +121,10 @@ export const signIn = async (req, res) => {
 
 export const signOut = async (req, res) => { 
     try {
-        // Get refresh token from cookies
         const token = req.cookies?.refreshToken;
 
         if (token) {
-            // romove refresh token from database
             await Session.deleteOne({ refreshToken: token });
-
-            // clear the cookie
             res.clearCookie('refreshToken');
         }
 
@@ -129,5 +135,40 @@ export const signOut = async (req, res) => {
         return res
             .status(500)
             .json({ message: "An error occurred during logout.", error: error.message });
+    }
+}
+
+// Refresh token endpoint
+export const refreshToken = async (req, res) => {
+    try {
+        const token = req.cookies?.refreshToken;
+
+        if (!token) {
+            return res
+                .status(401)
+                .json({ message: "Refresh token is required." });
+        }
+
+        const session = await Session.findOne({ refreshToken: token });
+
+        if (!session || session.expiresAt < new Date()) {
+            return res
+                .status(403)
+                .json({ message: "Invalid or expired refresh token." });
+        }
+
+        const accessToken = jwt.sign(
+            { userId: session.userId },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: ACCESS_TOKEN_TTL }
+        );
+
+        return res
+            .status(200)
+            .json({ accessToken });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ message: "An error occurred during token refresh.", error: error.message });
     }
 }

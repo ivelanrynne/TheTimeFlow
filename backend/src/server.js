@@ -4,6 +4,8 @@ import { connectDB } from './libs/db.js';
 import authRoutes from './routes/authRoute.js';
 import userRoutes from './routes/userRoute.js';
 import cookieParser from 'cookie-parser';
+import { protectedRoute } from './middlewares/authMiddleware.js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -13,12 +15,16 @@ const PORT = process.env.PORT || 5001;
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+}));
 
 // public routes
 app.use('/api/auth', authRoutes);
 
 // private routes
-app.use('/api/user', userRoutes);
+app.use('/api/users', protectedRoute, userRoutes);
 
 // Connect to MongoDB
 connectDB().then(() => {
